@@ -69,6 +69,7 @@ public class Controller : IEntityController<WebsiteEntity>
     
     public Task DeletedAsync(WebsiteEntity entity, CancellationToken cancellationToken)
     {
+        _client.Delete<V1Pod>($"{entity.Metadata.Name}", entity.Metadata.NamespaceProperty);
         return Task.CompletedTask;
     }
 }
