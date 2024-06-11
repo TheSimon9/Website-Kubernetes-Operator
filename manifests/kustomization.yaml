@@ -1,0 +1,16 @@
+namespace: website-system
+namePrefix: website-
+commonLabels:
+  operator: website
+resources:
+- operator-role.yaml
+- operator-role-binding.yaml
+- deployment.yaml
+- websites_intre_it.yaml
+- namespace.yaml
+images:
+- name: operator
+  newName: docker.io/library/operator
+  newTag: latest
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
