@@ -7,11 +7,11 @@ The schema contains three elements:
 - Entity
 - Finalizer
 
-The **controller** is going to manage the "reconcile" step. It will watch over the observed resources and takes care of being sure that the k8s cluster state and the desired state are the same. 
+The **controller** is going to manage the "reconcile" step. It will watch over the observed resources and takes care of being sure that the k8s cluster state and the desired state are the same.
 
 The **entity** described the state that should be observed by the controller.
 
-The **finalizer** has the responsibility of dispose unused resources. 
+The **finalizer** has the responsibility of dispose unused resources.
 
 ## 💪🏻 Working software exercises
 You should start from this schema and implement the following feature:
@@ -49,7 +49,7 @@ set the imagePullPolicy: IfNotPresent property in the generated deployment
         image: operator
         name: operator
         imagePullPolicy: IfNotPresent
-    
+
 
 Load the image in your local minikube cluster
 
@@ -71,8 +71,19 @@ Apply it:
     name: "My Website"
 ```
 
-## Notes
+## Notes & FAQ
 
+### Minikube images aren't updated
+If you are using minikube and you are not able to see the updated image, you could try to run the following command:
+
+    minikube image rm operator:latest
+
+And upload the new image again with
+
+    minikube image load operator:latest
+
+### Common words
 (*) Reconciles: it stands for the act of the operator to edit
 (reconcile) the status of the kubernetes cluster as we want (looking at the custom resource)
 
+ 
