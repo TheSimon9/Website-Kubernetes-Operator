@@ -1,3 +1,4 @@
+using k8s.Models;
 using KubeOps.Abstractions.Controller;
 using KubeOps.Abstractions.Finalizer;
 using KubeOps.Abstractions.Rbac;
@@ -27,6 +28,37 @@ public class Controller : IEntityController<WebsiteEntity>
 
         entity.Status.Status = "Reconciling";
         entity = await _client.UpdateStatusAsync(entity, cancellationToken);
+        
+        var pod = new V1Pod
+        {
+            Metadata = new V1ObjectMeta
+            {
+                Name = entity.Metadata.Name,
+                NamespaceProperty = entity.Metadata.NamespaceProperty
+            },
+            Spec = new V1PodSpec
+            {
+                Containers = new List<V1Container>
+                {
+                    new()
+                    {
+                        Name = "container",
+                        Image = "nginx",
+                        Env = new List<V1EnvVar>()
+                        {
+                            new()
+                            {
+                                Name = "NAME",
+                                Value = entity.Spec.Name
+                            },
+                        }
+                    }
+                }
+            }
+        };
+        
+        await _client.CreateAsync(pod, cancellationToken);
+        
         entity.Status.Status = "Reconciled";
         await _client.UpdateStatusAsync(entity, cancellationToken);
     }
