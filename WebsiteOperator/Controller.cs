@@ -69,6 +69,6 @@ public class Controller : IEntityController<WebsiteEntity>
     
     public Task DeletedAsync(WebsiteEntity entity, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 }
