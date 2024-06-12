@@ -79,6 +79,32 @@ public class Controller : IEntityController<WebsiteEntity>
         };
         
         await _client.CreateAsync(deployment, cancellationToken);
+
+        var service = new V1Service()
+        {
+            Metadata = new V1ObjectMeta()
+            {
+                Name = entity.Metadata.Name,
+                NamespaceProperty = entity.Metadata.NamespaceProperty
+            },
+            Spec = new V1ServiceSpec()
+            {
+                Selector = new Dictionary<string, string>()
+                {
+                    {"app", "website"}
+                },
+                Type = "NodePort",
+                Ports = new List<V1ServicePort>()
+                {
+                    new()
+                    {
+                        Port = 80,
+                        TargetPort = 80
+                    }
+                }
+            }
+        };
+        await _client.CreateAsync(service, cancellationToken);
         
         entity.Status.Status = "Reconciled";
         await _client.UpdateStatusAsync(entity, cancellationToken);
