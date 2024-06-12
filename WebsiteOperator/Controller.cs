@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using k8s.Models;
 using KubeOps.Abstractions.Controller;
 using KubeOps.Abstractions.Finalizer;
@@ -33,35 +29,56 @@ public class Controller : IEntityController<WebsiteEntity>
         entity.Status.Status = "Reconciling";
         entity = await _client.UpdateStatusAsync(entity, cancellationToken);
         
-        var pod = new V1Pod
+        var deployment = new V1Deployment
         {
             Metadata = new V1ObjectMeta
             {
                 Name = entity.Metadata.Name,
                 NamespaceProperty = entity.Metadata.NamespaceProperty
             },
-            Spec = new V1PodSpec
+            Spec = new V1DeploymentSpec()
             {
-                Containers = new List<V1Container>
+                Replicas = entity.Spec.Replicas,
+                Selector = new V1LabelSelector()
                 {
-                    new()
+                    MatchLabels = new Dictionary<string, string>()
                     {
-                        Name = "container",
-                        Image = "nginx",
-                        Env = new List<V1EnvVar>()
+                        {"app", "website"}
+                    }
+                },
+                Template = new V1PodTemplateSpec()
+                {
+                    Metadata = new V1ObjectMeta()
+                    {
+                        Labels = new Dictionary<string, string>()
+                        {
+                            {"app", "website"}
+                        },
+                    },
+                    Spec = new V1PodSpec()
+                    {
+                        Containers = new List<V1Container>
                         {
                             new()
                             {
-                                Name = "NAME",
-                                Value = entity.Spec.Name
-                            },
+                                Name = "container",
+                                Image = "nginx",
+                                Env = new List<V1EnvVar>()
+                                {
+                                    new()
+                                    {
+                                        Name = "NAME",
+                                        Value = entity.Spec.Name
+                                    },
+                                }
+                            }
                         }
                     }
                 }
             }
         };
         
-        await _client.CreateAsync(pod, cancellationToken);
+        await _client.CreateAsync(deployment, cancellationToken);
         
         entity.Status.Status = "Reconciled";
         await _client.UpdateStatusAsync(entity, cancellationToken);

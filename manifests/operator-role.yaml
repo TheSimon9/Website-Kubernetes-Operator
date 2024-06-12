@@ -4,10 +4,11 @@ metadata:
   name: operator-role
 rules:
 - apiGroups:
-  - ""
+  - "apps"
   resources:
   - events
   - pods
+  - deployments
   verbs:
   - get
   - list

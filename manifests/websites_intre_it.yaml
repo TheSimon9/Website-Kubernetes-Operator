@@ -28,6 +28,10 @@ spec:
               name:
                 nullable: false
                 type: string
+              replicas:
+                format: int32
+                nullable: false
+                type: integer
             type: object
         type: object
     served: true

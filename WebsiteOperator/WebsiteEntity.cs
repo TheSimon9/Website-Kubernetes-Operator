@@ -19,6 +19,7 @@ public class WebsiteEntity :
     public class EntitySpec
     {
         public string Name { get; set; }
+        public int Replicas { get; set; }
     }
 
     public class EntityStatus
